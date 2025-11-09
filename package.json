@@ -1,0 +1,30 @@
+{
+  "name": "webscrapbook",
+  "version": "2.24.3",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint",
+    "dev": "npm run dev:chromium",
+    "dev:chromium": "node tools/build.js -t chromium -m dev",
+    "dev:chromium2": "node tools/build.js -t chromium-mv2 -m dev",
+    "dev:chromium3": "node tools/build.js -t chromium-mv3 -m dev",
+    "dev:firefox": "node tools/build.js -t firefox -m dev",
+    "dev:firefox2": "node tools/build.js -t firefox-mv2 -m dev",
+    "dev:firefox3": "node tools/build.js -t firefox-mv3 -m dev",
+    "pack": "npm run pack:chromium && npm run pack:firefox",
+    "pack:chromium": "node tools/build.js -t chromium -m pack",
+    "pack:chromium2": "node tools/build.js -t chromium-mv2 -m pack",
+    "pack:chromium3": "node tools/build.js -t chromium-mv3 -m pack",
+    "pack:firefox": "node tools/build.js -t firefox -m pack",
+    "pack:firefox2": "node tools/build.js -t firefox-mv2 -m pack",
+    "pack:firefox3": "node tools/build.js -t firefox-mv3 -m pack"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.4.0",
+    "@stylistic/eslint-plugin": "^4.2.0",
+    "eslint": "^9.23.0",
+    "glob": "^11.0.2",
+    "globals": "^16.0.0",
+    "web-ext": "^8.6.0"
+  }
+}

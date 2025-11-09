@@ -1,0 +1,8 @@
+.tree-book a.toggle {
+  position: absolute;
+  margin-inline-start: -1em;
+}
+
+.tree-book a.toggle > img {
+  margin: 0;
+}

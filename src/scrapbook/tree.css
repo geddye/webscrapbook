@@ -1,5 +1,8 @@
 .tree {
   position: relative;
+  width: -moz-fit-content; /* Firefox < 94 */
+  width: fit-content;
+  min-width: 100%;
   line-height: 1;
 }
 
@@ -16,20 +19,22 @@
 .tree ul li {
   display: block;
   box-sizing: border-box;
-  padding: .25em;
-  padding-__MSG_@@bidi_start_edge__: 1em;
+  padding-top: .25em;
+  padding-bottom: .25em;
 }
 
 .tree ul li ul {
   margin-top: .25em;
   margin-bottom: -.25em;
+  padding-inline-start: 1em;
 }
 
 .tree li > div {
   box-sizing: border-box;
   margin: -2px 0;
   border: solid transparent;
-  border-width: 2px 0;
+  border-width: 2px;
+  padding-inline-start: 1em;
   white-space: nowrap;
 }
 
@@ -37,7 +42,7 @@
   cursor: cell;
 }
 
-.tree li > div::before {
+.tree.selectable li > div::before {
   position: absolute;
   box-sizing: border-box;
   left: 0;
@@ -49,16 +54,16 @@
   content: "";
 }
 
-.tree li > div:hover::before {
-  border-color: rgba(125, 162, 206, 0.3);
-  background: linear-gradient(rgba(235, 244, 253, 0.3), rgba(196, 221, 252, 0.3));
+.tree.selectable li > div:hover::before {
+  border-color: rgba(125, 162, 206, .3);
+  background: linear-gradient(rgba(235, 244, 253, .2), rgba(196, 221, 252, .2));
 }
 
 .tree a {
   position: relative;
   z-index: 1;
-  text-decoration: none;
-  color: #000000;
+  text-decoration: unset;
+  color: unset;
 }
 
 .tree a > img {
@@ -110,19 +115,19 @@
   font-weight: bold;
 }
 
-.tree li > div.highlight::before {
+.tree.selectable li > div.highlight::before {
   border: 1px solid rgba(125, 162, 206, .7);
-  background: linear-gradient(rgba(235, 244, 253, .7), rgba(196, 221, 252, .7));
+  background: linear-gradient(rgba(235, 244, 253, .3), rgba(196, 221, 252, .3));
 }
 
-.tree li > div.anchor::before {
+.tree.selectable li > div.anchor::before {
   border: 1px solid rgba(125, 162, 206, .7);
 }
 
-.tree li > div.highlight:hover::before,
-.tree li > div.highlight.anchor::before {
-  border: 1px solid rgba(125, 162, 206, .9);
-  background: linear-gradient(rgba(235, 244, 253, .9), rgba(196, 221, 252, .9));
+.tree.selectable li > div.highlight:hover::before,
+.tree.selectable li > div.highlight.anchor::before {
+  border: 1px solid rgba(125, 162, 206, .7);
+  background: linear-gradient(rgba(235, 244, 253, .5), rgba(196, 221, 252, .5));
 }
 
 .tree.moving li.dragged {
@@ -130,13 +135,14 @@
 }
 
 .tree li > div.dragover.above {
-  border-top-color: #3399FF;
+  border-top-color: #FF3333;
 }
 
 .tree li > div.dragover.below {
-  border-bottom-color: #3399FF;
+  border-bottom-color: #FF3333;
 }
 
 .tree li > div.dragover.within {
-  outline: 2px dashed #3399FF;
+  border-style: dashed;
+  border-color: #FF3333;
 }

@@ -4,14 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>WebScrapBook Test Suite</title>
-<link rel="stylesheet" type="text/css" href="common.css">
-<script src="lib/browser-polyfill.js"></script>
-<script src="lib/jszip.js"></script>
-<script src="common.js"></script>
-<script src="test.js"></script>
+<link rel="stylesheet" href="lib/mocha.css">
+<script src="shared/lib/browser-polyfill.js"></script>
+<script src="shared/lib/jszip.js"></script>
+<script src="shared/lib/sha.js"></script>
+<script src="shared/lib/mime.js"></script>
+<script src="shared/lib/referrer.js"></script>
+<script src="shared/lib/map-with-default.js"></script>
+<script src="shared/lib/strftime.js"></script>
+<script src="shared/core/common.js"></script>
+<script src="shared/capturer/common.js"></script>
+<script src="lib/mocha.js"></script>
+<script src="lib/chai.js"></script>
+<script src="lib/unittest.js"></script>
+<script src="test.js" type="module"></script>
 </head>
 <body>
-<pre>
-</pre>
+<div id="mocha"></div>
 </body>
 </html>

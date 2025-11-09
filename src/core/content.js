@@ -1,79 +1,56 @@
 /******************************************************************************
- *
  * Shared utilities for most content scripts.
  *
- * @require {Object} scrapbook
- * @public {Object} core
+ * @requires scrapbook
+ * @module core
  *****************************************************************************/
 
-(function (root, factory) {
+(function (global, factory) {
   // Browser globals
-  if (root.hasOwnProperty('core')) { return; }
-  root.core = factory(
-    root.isDebug,
-    root.browser,
-    root.scrapbook,
-    root,
-    window,
-    console,
+  if (global.hasOwnProperty('core')) { return; }
+  global.core = factory(
+    global.isDebug,
+    global.scrapbook,
   );
-}(this, function (isDebug, browser, scrapbook, root, window, console) {
+}(this, function (isDebug, scrapbook) {
 
-  'use strict';
+'use strict';
 
-  const core = {};
+const core = {};
 
-  /**
-   * Return true to confirm that content script is loaded.
-   *
-   * @kind invokable
-   */
-  core.isScriptLoaded = async function (params) {
-    return true;
-  };
+/**
+ * Return true to confirm that content script is loaded.
+ *
+ * @type invokable
+ */
+core.isScriptLoaded = async function (params) {
+  return true;
+};
 
-  /**
-   * Return frameId of the frame of this content script.
-   */
-  window.addEventListener("message", async (event) => {
-    try {
-      if (event.data !== browser.runtime.getURL('')) {
-        throw new Error('Not extension context.');
-      }
-    } catch (ex) {
-      // browser.runtime.getURL() may trigger an error if extension is reloaded
-      return;
+/**
+ * Return frameId of the frame of this content script.
+ *
+ * - Do not receive and react to a command here to prevent an Xray vision
+ *   issue of the passed data in Firefox and a security harzard from a page
+ *   script that knows about the extension.
+ * - Check for extension URL rather than ID as it's encrypted in some
+ *   browsers (e.g. Firefox) and not known by a page script.
+ */
+window.addEventListener("message", async (event) => {
+  try {
+    if (event.data !== browser.runtime.getURL('')) {
+      throw new Error('Not extension context.');
     }
+  } catch (ex) {
+    // browser.runtime.getURL() may trigger an error if extension is reloaded
+    return;
+  }
 
-    event.ports[0].postMessage({frameId: core.frameId});
-  }, false);
+  event.ports[0].postMessage({frameId: core.frameId});
+}, false);
 
-  browser.runtime.onMessage.addListener((message, sender) => {
-    const {cmd, args} = message;
-    isDebug && console.debug(cmd, "receive", args);
+scrapbook.addMessageListener();
 
-    const parts = cmd.split(".");
-    let subCmd = parts.pop();
-    let object = root;
-    while (parts.length) {
-      object = object[parts.shift()];
-    }
-
-    // thrown Error don't show here but cause the sender to receive an error
-    if (!object || !subCmd || typeof object[subCmd] !== 'function') {
-      throw new Error(`Unable to invoke unknown command '${cmd}'.`);
-    }
-
-    return Promise.resolve()
-      .then(() => {
-        return object[subCmd](args, sender);
-      })
-      .catch((ex) => {
-        console.error(ex);
-        throw ex;
-      });
-  });
-
-  return core;
+return core;
 
 }));

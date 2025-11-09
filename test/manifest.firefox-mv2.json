@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "name": "WebScrapBook Test Suite",
+  "description": "Test suite for WebScrapBook extension.",
+  "version": "2.24.3",
+  "author": "Danny Lin",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "webscrapbooktestsuite@danny0838.addons.mozilla.org",
+      "strict_min_version": "79.0"
+    }
+  },
+  "background": {
+    "page": "background.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost/capturex_*",
+        "http://localhost/viewer_*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "browser_action": {
+    "default_title": "WebScrapBook Test Suite"
+  },
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "http://*/*"
+  ]
+}

@@ -1,2 +1,17 @@
-/dist/
+# Configs
 /test/config.local.json
+
+# IDE - Node.js
+/node_modules/
+/package-lock.json
+
+# IDE - Python
+*.pyc
+
+# Build outputs
+/src/manifest.json
+/test/manifest.json
+/dist/
+
+# Temporary files
+/test/shared/

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Test used background images (adoptedStyleSheets)</title>
+</head>
+<body>
+<blockquote id="adopted">#adopted</blockquote>
+
+<div id="shadow1">
+<template shadowrootmode="open">
+  <blockquote id="adopted">#adopted</blockquote>
+</template>
+</div>
+</body>
+<script src="../../common.js"></script>
+<script>
+utils.loadShadowDoms();
+
+var css = new CSSStyleSheet();
+css.insertRule('#adopted { background-image: url(./doc.bmp); }');
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, css];
+
+var css = new CSSStyleSheet();
+css.insertRule('#adopted { background-image: url(./shadow.bmp); }');
+var s = document.querySelector('#shadow1').shadowRoot;
+s.adoptedStyleSheets = [...s.adoptedStyleSheets, css];
+</script>
+</html>

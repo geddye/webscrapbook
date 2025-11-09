@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+<!-- CSS, can't resolve -->
+<script>
+var text = `\
+@import "null.css";
+@font-face { font-family: invalid; src: url("null.woff"); }
+#invalid { background-image: url("red.bmp"); }`;
+
+var elem = document.createElement("link");
+elem.rel = "stylesheet";
+elem.href = `data:text/css;charset=UTF-8,${encodeURIComponent(text)}`;
+document.querySelector("head").appendChild(elem);
+</script>
+</body>
+</html>

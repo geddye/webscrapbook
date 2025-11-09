@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Test used background images (shadow DOM)</title>
+</head>
+<body>
+<div id="shadow1">
+<template shadowrootmode="open">
+  <style>
+:host { background-image: url("yellow.bmp"); }
+#shadow { background-image: url("green.bmp"); }
+@media all {
+  #media { background-image: url("blue.bmp"); }
+}
+  </style>
+  <blockquote id="shadow">shadow</blockquote>
+  <blockquote id="media">media</blockquote>
+</template>
+</div>
+</body>
+<script src="../../common.js"></script>
+<script>utils.loadShadowDoms();</script>
+</html>

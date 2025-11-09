@@ -1,25 +1,22 @@
 /******************************************************************************
- *
  * Script for manage.html.
  *
- * @require {Object} scrapbook
- * @require {Object} sidebar
+ * @requires scrapbook
+ * @requires sidebar
+ * @modifies sidebar
  *****************************************************************************/
 
-(function (root, factory) {
+(function (global, factory) {
   // Browser globals
   factory(
-    root.isDebug,
-    root.browser,
-    root.scrapbook,
-    root.sidebar,
-    window,
-    console,
+    global.isDebug,
+    global.scrapbook,
+    global.sidebar,
   );
-}(this, function (isDebug, browser, scrapbook, sidebar, window, console) {
+}(this, function (isDebug, scrapbook, sidebar) {
 
-  'use strict';
+'use strict';
 
-  sidebar.mode = "manage";
+sidebar.mode = "manage";
 
 }));

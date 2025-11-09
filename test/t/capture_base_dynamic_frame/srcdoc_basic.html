@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="referrer" content="strict-origin">
+<meta name="referrer" content="unsafe-url">
+<base href="resources/">
+<title>Test frame-related URLs after base[href]</title>
+</head>
+<body>
+<blockquote><iframe srcdoc="<img src=./img_src.py>"></iframe></blockquote>
+<blockquote><iframe srcdoc="<link rel='stylesheet' href='./link.py'>" referrerpolicy="origin"></iframe></blockquote>
+
+<meta name="referrer" content="no-referrer">
+</body>
+</html>

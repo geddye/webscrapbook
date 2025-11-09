@@ -6,22 +6,20 @@
 <title>__MSG_ExtensionName__</title>
 <base target="webscrapbook">
 <link rel="stylesheet" href="tree.css">
-<link rel="stylesheet" href="bookTree.css">
+<link rel="stylesheet" href="book-tree.css">
 <link rel="stylesheet" href="sidebar.css">
 <script src="../lib/strftime.js"></script>
 <script src="../lib/browser-polyfill.js"></script>
 <script src="../core/common.js"></script>
-<script src="../core/optionsAuto.js"></script>
+<script src="../core/options-auto.js"></script>
 <script src="../core/extension.js"></script>
 <script src="server.js"></script>
 <script src="tree.js"></script>
-<script src="bookTree.js"></script>
+<script src="book-tree.js"></script>
 <script src="sidebar.js"></script>
 </head>
 <body>
-<div id="dialog-mask" hidden>
-  <div id="dialog-wrapper"></div>
-</div>
+<iframe id="downloader"></iframe>
 <div id="wrapper">
   <form id="toolbar">
     <select id="book" autocomplete="off" hidden></select>
@@ -31,17 +29,18 @@
       <button id="command" type="button" disabled>☰</button>
     </div>
     <input type="file" id="upload-file-selector" multiple hidden>
+    <input type="file" id="import-file-selector" multiple hidden accept=".wsba">
   </form>
-  <pre id="logger"></pre>
+  <pre id="logger" hidden></pre>
   <div id="tree">
     <div id="items"></div>
-    <!-- Firefox has a bug that CSS resize doesn't work for iframe.
-         Add a wrapper to workaround it.
-         ref: https://bugzilla.mozilla.org/show_bug.cgi?id=680823
-     -->
-    <div id="postit-resizer" hidden>
-      <iframe id="postit"></iframe>
-    </div>
+  </div>
+  <!-- Firefox has a bug that CSS resize doesn't work for iframe.
+       Add a wrapper to workaround it.
+       ref: https://bugzilla.mozilla.org/show_bug.cgi?id=680823
+   -->
+  <div id="postit-resizer" hidden>
+    <iframe id="postit"></iframe>
   </div>
 </div>
 
@@ -56,8 +55,10 @@
   <button value="mkpostit" hidden>__MSG_ScrapBookCommandCreatePostit__</button>
   <button value="mknote" hidden>__MSG_ScrapBookCommandCreateNote__...</button>
   <button value="upload" hidden>__MSG_ScrapBookCommandUpload__...</button>
+  <button value="import" hidden>__MSG_ScrapBookCommandImport__...</button>
   <hr>
   <button value="view_recycle" hidden>__MSG_ScrapBookCommandViewRecycle__</button>
+  <button value="clean" hidden>__MSG_ScrapBookCommandClean__</button>
 </div>
 
 <div id="command-popup" tabindex="-1" hidden>
@@ -75,6 +76,7 @@
   <button value="mkpostit" hidden>__MSG_ScrapBookCommandCreatePostit__</button>
   <button value="mknote" hidden>__MSG_ScrapBookCommandCreateNote__...</button>
   <button value="upload" hidden>__MSG_ScrapBookCommandUpload__...</button>
+  <button value="import" hidden>__MSG_ScrapBookCommandImport__...</button>
   <hr>
   <button value="edit" hidden>__MSG_ScrapBookCommandEdit__</button>
   <button value="recover" hidden>__MSG_ScrapBookCommandRecover__</button>
@@ -82,6 +84,7 @@
   <button value="move_down" hidden>__MSG_ScrapBookCommandMoveDown__</button>
   <button value="move_into" hidden>__MSG_ScrapBookCommandMoveTo__...</button>
   <button value="copy_into" hidden>__MSG_ScrapBookCommandCopyTo__...</button>
+  <button value="export" hidden>__MSG_ScrapBookCommandExport__</button>
   <button value="drag" hidden></button>
   <button value="recycle" hidden>__MSG_ScrapBookCommandRecycle__</button>
   <button value="delete" hidden>__MSG_ScrapBookCommandDelete__</button>
@@ -163,11 +166,34 @@
 </form>
 </template>
 
+<template id="tpl-mkfolder">
+<form>
+  <dl>
+    <div>
+      <dt>__MSG_ScrapBookCommandCreateFolderDialogTitle__</dt>
+      <dd>
+        <label><input type="text" name="title" value=""></label>
+      </dd>
+    </div>
+  </dl>
+  <div class="buttons">
+    <input type="submit" value="__MSG_OK__">
+    <input type="button" class="cancel" value="__MSG_Cancel__">
+  </div>
+</form>
+</template>
+
 <template id="tpl-mknote">
 <form>
   <dl>
     <div>
       <dt>__MSG_ScrapBookCommandCreateNoteDialogTitle__</dt>
+      <dd>
+        <label><input type="text" name="title" value=""></label>
+      </dd>
+    </div>
+    <div>
+      <dt>__MSG_ScrapBookCommandCreateNoteDialogType__</dt>
       <dd>
         <label><input type="radio" name="format" value="html" checked><span>HTML</span></label>
         <label><input type="radio" name="format" value="markdown"><span>Markdown</span></label>
@@ -185,7 +211,7 @@
 <form>
   <dl>
     <div>
-      <dt>__MSG_ScrapBookCommandMoveDialogId__</dt>
+      <dt>__MSG_ScrapBookCommandMoveDialogId__ <input name="fill-id" type="button" value="__MSG_ScrapBookCommandMoveDialogIdFill__..."></dt>
       <dd><input type="text" name="id" value="root"></dd>
     </div>
     <div>
@@ -215,7 +241,7 @@
       <dd><select name="book"></select></dd>
     </div>
     <div>
-      <dt>__MSG_ScrapBookCommandCopyDialogRoot__</dt>
+      <dt>__MSG_ScrapBookCommandCopyDialogRoot__ <input name="fill-id" type="button" value="__MSG_ScrapBookCommandCopyDialogRootFill__..."></dt>
       <dd><input type="text" name="id" value="root"></dd>
     </div>
     <div>
