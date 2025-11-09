@@ -742,23 +742,17 @@
     "description": "Name of the extension as it's visible to the outside world",
     "message": "網頁剪貼簿"
   },
-  "IndexerHeader": {
-    "message": "選擇網頁剪貼簿資料夾或其 ZIP 壓縮檔。你可以拖放它們至此頁，或使用以下按鈕："
-  },
-  "IndexerLoadServer": {
-    "message": "索引伺服器資料"
-  },
-  "IndexerPickDir": {
-    "message": "選擇資料夾"
-  },
-  "IndexerPickDirTooltip": {
-    "message": "用此方式選擇資料夾時，若根目錄下只有單一資料夾，會無法正確辨識根目錄。用拖放方式選擇資料夾或在根目錄下增加檔案或含有檔案的資料夾可避免此問題。"
-  },
-  "IndexerPickFiles": {
-    "message": "選擇 ZIP 壓縮檔"
-  },
   "IndexerTitle": {
     "message": "建立站台索引"
+  },
+  "ItemPickerRelationAbove": {
+    "message": "上方"
+  },
+  "ItemPickerRelationBelow": {
+    "message": "下方"
+  },
+  "ItemPickerRelationWithin": {
+    "message": "內部"
   },
   "ItemPickerTitle": {
     "message": "選擇項目"
@@ -1401,6 +1395,18 @@
   "OptionsSaveLabel": {
     "message": "儲存"
   },
+  "PermissionHostDesc": {
+    "message": "需要授予所有網站主機的存取權限（可在套件管理頁面中設定），否則可能無法擷取部分網頁或資源，或無法連線至設定的後端伺服器。"
+  },
+  "PermissionHostSummary": {
+    "message": "主機權限未授予"
+  },
+  "PermissionWebRequestBlockingDesc": {
+    "message": "有些瀏覽器需要強制安裝套件才能授予網路請求阻擋權限；若無此權限，將有以下影響：\n• 擷取網頁時，無法送出適當的參照網址（referrer），而有些網站會根據參照網址控制存取，這可能導致部分網頁或資源無法正常擷取。\n• 瀏覽封存檔案時，無法重導向至封存頁面檢視器，而會視為一般壓縮檔下載。\n\n強制安裝套件的方法：\n• Windows: 開啟登錄編輯程式（regedit），在以下路徑加入「字串值」（若缺少上層機碼請自行加入）：\n  • Google Chrome: {主機碼}\\SOFTWARE\\Policies\\Google\\Chrome\\ExtensionInstallForcelist\\{編號} = {套件ID}\n  • Microsoft Edge: {主機碼}\\SOFTWARE\\Policies\\Microsoft\\Edge\\ExtensionInstallForcelist\\{編號} = {套件ID}\n  • Chromium: {主機碼}\\SOFTWARE\\Policies\\Chromium\\ExtensionInstallForcelist\\{編號} = {套件ID}\n  其中 {主機碼} 可為 HKEY_CURRENT_USER（對目前使用者）或 HKEY_LOCAL_MACHINE（對所有使用者），{編號} 為任意整數，{套件ID} 可在套件管理頁面中查詢。\n  完成後須從選單結束瀏覽器（確保中止所有背景程序）並重新啟動。若設定成功，可在擴充功能管理頁面看到套件已安裝且無法停用；或在 chrome://policy/ 看到政策資訊。\n• 其他作業系統或瀏覽器的設定方法請參見官方文件：\n  • Google Chrome: https://chromeenterprise.google/intl/zh_tw/policies/#ExtensionInstallForcelist\n  • Microsoft Edge: https://learn.microsoft.com/zh-tw/DeployEdge/microsoft-edge-policies#extensioninstallforcelist"
+  },
+  "PermissionWebRequestBlockingSummary": {
+    "message": "網路請求阻擋權限未授予"
+  },
   "ScrapBookCommandBrowse": {
     "message": "在檔案管理員檢視"
   },
@@ -1421,6 +1427,9 @@
   },
   "ScrapBookCommandCopyDialogRoot": {
     "message": "複製到這個 ID 的項目下:"
+  },
+  "ScrapBookCommandCopyDialogRootFill": {
+    "message": "選擇"
   },
   "ScrapBookCommandCopyInfo": {
     "message": "複製資訊"
@@ -1531,6 +1540,9 @@
   },
   "ScrapBookCommandMoveDialogId": {
     "message": "移動到這個 ID 的項目下:"
+  },
+  "ScrapBookCommandMoveDialogIdFill": {
+    "message": "選擇"
   },
   "ScrapBookCommandMoveDialogIndex": {
     "message": "位置 (從 0 開始，留空則置於最後):"

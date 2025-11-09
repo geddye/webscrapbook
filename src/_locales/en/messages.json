@@ -742,23 +742,17 @@
     "description": "Name of the extension as it's visible to the outside world",
     "message": "WebScrapBook"
   },
-  "IndexerHeader": {
-    "message": "Pick directories or ZIP archive files of scrapbook folders, via dropping them into this page, or using the buttons below:"
-  },
-  "IndexerLoadServer": {
-    "message": "Index for server"
-  },
-  "IndexerPickDir": {
-    "message": "Pick a folder"
-  },
-  "IndexerPickDirTooltip": {
-    "message": "When selecting a folder in this way, the root directory cannot be correctly identified if the root directory contains only a single folder. Select a folder via dropping, or add a file or a folder containing files to the root directory, to avoid this issue."
-  },
-  "IndexerPickFiles": {
-    "message": "Pick ZIP files"
-  },
   "IndexerTitle": {
     "message": "Generate site index"
+  },
+  "ItemPickerRelationAbove": {
+    "message": "Above"
+  },
+  "ItemPickerRelationBelow": {
+    "message": "Below"
+  },
+  "ItemPickerRelationWithin": {
+    "message": "Inside"
   },
   "ItemPickerTitle": {
     "message": "Select item"
@@ -1401,6 +1395,18 @@
   "OptionsSaveLabel": {
     "message": "Save"
   },
+  "PermissionHostDesc": {
+    "message": "Host access permission of all sites (which can be configured in the extension manager) are required; otherwise a failure may occur when capturing a web page or resource, or when connecting to the configured backend server."
+  },
+  "PermissionHostSummary": {
+    "message": "Host permission not granted"
+  },
+  "PermissionWebRequestBlockingDesc": {
+    "message": "Some browsers require an extension be force-installed to grant web request blocking permission, without which may:\n• Being unable to send an appropriate referrer, which might be checked by the website for access control, causing some web pages or resources not captured properly.\n• Being unable to redirect to the viewer when visiting an archive file, which will be downloaded as a normal ZIP file instead.\n\nTo force install an extension:\n• Windows: Open Windows Registry Editor (regedit) and add a new string value:\n  • Google Chrome: {main_key}\\SOFTWARE\\Policies\\Google\\Chrome\\ExtensionInstallForcelist\\{num} = {extension_id}\n  • Microsoft Edge: {main_key}\\SOFTWARE\\Policies\\Microsoft\\Edge\\ExtensionInstallForcelist\\{num} = {extension_id}\n  • Chromium: {main_key}\\SOFTWARE\\Policies\\Chromium\\ExtensionInstallForcelist\\{num} = {extension_id}\n  Where {main_key} can be either HKEY_CURRENT_USER (for the current user) or HKEY_LOCAL_MACHINE (for all users), {num} is any integer, and {extension_id} can be found in the extension management page.\n  Exit the browser through the menu (to ensure shutting down background processes) and restart it after done. When successfully configured, the extension should be installed and cannot be disabled, and the policy can be found at chrome://policy/ page.\n• For configuration for another operating system or browser, see the official documentation:\n  • Google Chrome: https://chromeenterprise.google/intl/en_us/policies/#ExtensionInstallForcelist\n  • Microsoft Edge: https://learn.microsoft.com/en-us/DeployEdge/microsoft-edge-policies#extensioninstallforcelist"
+  },
+  "PermissionWebRequestBlockingSummary": {
+    "message": "Web request blocking permission not granted"
+  },
   "ScrapBookCommandBrowse": {
     "message": "Browse locally"
   },
@@ -1421,6 +1427,9 @@
   },
   "ScrapBookCommandCopyDialogRoot": {
     "message": "Copy into the item of this ID:"
+  },
+  "ScrapBookCommandCopyDialogRootFill": {
+    "message": "Select"
   },
   "ScrapBookCommandCopyInfo": {
     "message": "Copy info"
@@ -1531,6 +1540,9 @@
   },
   "ScrapBookCommandMoveDialogId": {
     "message": "Move into the item of this ID:"
+  },
+  "ScrapBookCommandMoveDialogIdFill": {
+    "message": "Select"
   },
   "ScrapBookCommandMoveDialogIndex": {
     "message": "Position (start from 0, empty for last):"

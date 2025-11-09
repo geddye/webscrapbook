@@ -776,12 +776,12 @@ ul {
         if (validate && typeof document !== 'undefined' && document.querySelector) {
           try {
             selector1 && document.querySelector(selector1);
-          } catch (ex) {
+          } catch {
             throw new Error(`Invalid testing CSS selector: ${selector1}`);
           }
           try {
             selector2 && document.querySelector(selector2);
-          } catch (ex) {
+          } catch {
             throw new Error(`Invalid control CSS selector: ${selector2}`);
           }
         }
@@ -1175,8 +1175,8 @@ class { }`);
       });
 
       $(it).xfailIf(
-        userAgent.is('chromium') && userAgent.major < 101,
-        'var(...) is tidied in Chromium < 101 (possibly upper?)',
+        userAgent.is('chromium') && userAgent.major < 113,
+        'var(...) is tidied in Chromium < 113',
       )('browser syntax check/tidy for var()', function () {
         var rules = getRulesFromCssText(`p { color: var(  --myvar ); }`);
         assert.strictEqual(rules[0].cssText, `p { color: var(  --myvar ); }`);
@@ -2098,7 +2098,7 @@ class { }`);
           assert.strictEqual(helper.runCommand(command, doc), null);
         });
 
-        $it.skipIf($.noRegexNamedGroup)("named capture group", function () {
+        it("named capture group", function () {
           var helper = new capturer.CaptureHelperHandler();
           var doc = makeTestDoc();
 
@@ -3010,7 +3010,7 @@ insertedText`);
           helpers,
           rootNode: doc,
         });
-        var result = helper.run();
+        assert.deepEqual(helper.run(), {errors: []});
         assert.strictEqual(doc.body.innerHTML.trim(), `<div class="exclude2"></div>`);
       });
 
@@ -3043,7 +3043,7 @@ insertedText`);
           rootNode: doc,
           docUrl: 'http://example.com',
         });
-        var result = helper.run();
+        assert.deepEqual(helper.run(), {errors: []});
         assert.strictEqual(doc.body.innerHTML.trim(), `<div class="exclude2"></div>`);
       });
     });

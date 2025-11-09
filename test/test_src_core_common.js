@@ -23,7 +23,7 @@
 
 'use strict';
 
-const {MochaQuery: $, assert, userAgent, encodeText, cssRegex} = unittest;
+const {MochaQuery: $, assert, encodeText, cssRegex} = unittest;
 
 const $describe = $(describe);
 const $it = $(it);
@@ -410,6 +410,115 @@ describe('core/common.js', function () {
         });
       });
     }
+  });
+
+  describe('scrapbook.escapeHtmlComment', function () {
+    it('basic', function () {
+      // starts with ">"
+      assert.strictEqual(
+        scrapbook.escapeHtmlComment('> a'),
+        '\u200B> a',
+      );
+      assert.strictEqual(
+        scrapbook.escapeHtmlComment('\u200B> a'),
+        '\u200B\u200B> a',
+      );
+
+      // starts with "->"
+      assert.strictEqual(
+        scrapbook.escapeHtmlComment('-> a'),
+        '\u200B-> a',
+      );
+      assert.strictEqual(
+        scrapbook.escapeHtmlComment('\u200B-> a'),
+        '\u200B\u200B-> a',
+      );
+
+      // contains "-->"
+      assert.strictEqual(
+        scrapbook.escapeHtmlComment('a --> b'),
+        'a -\u200B-> b',
+      );
+      assert.strictEqual(
+        scrapbook.escapeHtmlComment('a -\u200B-> b'),
+        'a -\u200B\u200B-> b',
+      );
+
+      // contains "--!>"
+      assert.strictEqual(
+        scrapbook.escapeHtmlComment('a --!> b'),
+        'a -\u200B-!> b',
+      );
+      assert.strictEqual(
+        scrapbook.escapeHtmlComment('a -\u200B-!> b'),
+        'a -\u200B\u200B-!> b',
+      );
+
+      // ends with "<!-"
+      assert.strictEqual(
+        scrapbook.escapeHtmlComment('a <!-'),
+        'a <!\u200B-',
+      );
+      assert.strictEqual(
+        scrapbook.escapeHtmlComment('a <!\u200B-'),
+        'a <!\u200B\u200B-',
+      );
+
+      // contains "--" (for XML)
+      assert.strictEqual(
+        scrapbook.escapeHtmlComment('--'),
+        '-\u200B-',
+      );
+      assert.strictEqual(
+        scrapbook.escapeHtmlComment('-\u200B-'),
+        '-\u200B\u200B-',
+      );
+    });
+  });
+
+  describe('scrapbook.unescapeHtmlComment', function () {
+    function checkUnescape(str) {
+      var s = str;
+      s = scrapbook.escapeHtmlComment(s);
+      s = scrapbook.unescapeHtmlComment(s);
+      assert.strictEqual(s, str, `"${escape(s)}" not equal to "${escape(str)}"`);
+
+      var s = str;
+      s = scrapbook.escapeHtmlComment(s);
+      s = scrapbook.escapeHtmlComment(s);
+      s = scrapbook.unescapeHtmlComment(s);
+      s = scrapbook.unescapeHtmlComment(s);
+      assert.strictEqual(s, str, `"${escape(s)}" not equal to "${escape(str)}"`);
+    }
+
+    it('basic', function () {
+      // basic
+      checkUnescape('<b>basic text</b>');
+
+      // starts with ">"
+      checkUnescape('> a');
+
+      // starts with "->"
+      checkUnescape('-> a');
+
+      // contains "-->"
+      checkUnescape('--> b');
+      checkUnescape('a --> b');
+      checkUnescape('a -->');
+
+      // contains "--!>"
+      checkUnescape('--!> b');
+      checkUnescape('a --!> b');
+      checkUnescape('a --!>');
+
+      // ends with "<!-"
+      checkUnescape('a <!-');
+
+      // contains "--" (for XML)
+      checkUnescape('a --');
+      checkUnescape('a -- b');
+      checkUnescape('-- b');
+    });
   });
 
   describe('scrapbook.escapeFilename', function () {
@@ -1787,7 +1896,7 @@ describe('core/common.js', function () {
   $describe.skipIf($.noBrowser)('scrapbook.readFileAsDocument', function () {
     it('basic', async function () {
       var html = `<a href="http://example.com">ABC123 中文 𠀀</a>`;
-      var blob = new Blob([html], {type: "text/html"});
+      var blob = new Blob([html], {type: "text/html; charset=utf-8"});
       var doc = await scrapbook.readFileAsDocument(blob);
       assert.strictEqual(doc.querySelector('a').textContent, 'ABC123 中文 𠀀');
       assert.strictEqual(doc.querySelector('a').getAttribute('href'), 'http://example.com');
@@ -2141,6 +2250,7 @@ describe('core/common.js', function () {
       // re-read as the original charset
       var {text: output, charset} = await scrapbook.parseCssFile(blob, charset);
 
+      assert.isNull(parsedCharset);
       assert.strictEqual(output, expected);
     }
 

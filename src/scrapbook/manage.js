@@ -1,10 +1,9 @@
 /******************************************************************************
- *
  * Script for manage.html.
  *
- * @require {Object} scrapbook
- * @require {Object} sidebar
- * @override {string} sidebar.mode
+ * @requires scrapbook
+ * @requires sidebar
+ * @modifies sidebar
  *****************************************************************************/
 
 (function (global, factory) {
@@ -16,8 +15,8 @@
   );
 }(this, function (isDebug, scrapbook, sidebar) {
 
-  'use strict';
+'use strict';
 
-  sidebar.mode = "manage";
+sidebar.mode = "manage";
 
 }));

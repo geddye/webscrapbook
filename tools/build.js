@@ -32,36 +32,103 @@ function hardlink(src, dst) {
 
 function build(target) {
   switch (target) {
-    case 'firefox': {
-      console.log('Building files for Firefox...');
+    case 'firefox-mv3': {
+      console.log('Building files for Firefox (MV3)...');
       hardlink(path.join(srcDir, 'manifest.firefox.json'), path.join(srcDir, 'manifest.json'));
       break;
     }
-    case 'chromium': {
-      console.log('Building files for Chromium...');
+    case 'chromium':
+    case 'chromium-mv3': {
+      console.log('Building files for Chromium (MV3)...');
       hardlink(path.join(srcDir, 'manifest.chromium.json'), path.join(srcDir, 'manifest.json'));
+      break;
+    }
+    case 'firefox':
+    case 'firefox-mv2': {
+      console.log('Building files for Firefox (MV2)...');
+      hardlink(path.join(srcDir, 'manifest.firefox-mv2.json'), path.join(srcDir, 'manifest.json'));
+      break;
+    }
+    case 'chromium-mv2': {
+      console.log('Building files for Chromium (MV2)...');
+      hardlink(path.join(srcDir, 'manifest.chromium-mv2.json'), path.join(srcDir, 'manifest.json'));
       break;
     }
     default: {
       throw new Error(`Unsupported target: ${target}`);
     }
   }
+
+  // sync version to manifest files
+  {
+    const version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version;
+    for (const dst of globSync([
+      path.join(srcDir, 'manifest.*.json'),
+    ], {windowsPathsNoEscape: true})) {
+      const data = JSON.parse(fs.readFileSync(dst, 'utf8'));
+      if (data.version !== version) {
+        console.log(`Updating version for "${dst}" ...`);
+        data.version = version;
+        fs.writeFileSync(dst, JSON.stringify(data, null, 2) + '\n');
+      }
+    }
+  }
 }
 
 function buildTest(target) {
   switch (target) {
-    case 'firefox': {
-      console.log('Building test files for Firefox...');
+    case 'firefox-mv3': {
+      console.log('Building test files for Firefox (MV3)...');
       hardlink(path.join(testDir, 'manifest.firefox.json'), path.join(testDir, 'manifest.json'));
       break;
     }
-    case 'chromium': {
-      console.log('Building test files for Chromium...');
+    case 'chromium':
+    case 'chromium-mv3': {
+      console.log('Building test files for Chromium (MV3)...');
       hardlink(path.join(testDir, 'manifest.chromium.json'), path.join(testDir, 'manifest.json'));
+      break;
+    }
+    case 'firefox':
+    case 'firefox-mv2': {
+      console.log('Building test files for Firefox (MV2)...');
+      hardlink(path.join(testDir, 'manifest.firefox-mv2.json'), path.join(testDir, 'manifest.json'));
+      break;
+    }
+    case 'chromium-mv2': {
+      console.log('Building test files for Chromium (MV2)...');
+      hardlink(path.join(testDir, 'manifest.chromium-mv2.json'), path.join(testDir, 'manifest.json'));
       break;
     }
     default: {
       throw new Error(`Unsupported target: ${target}`);
+    }
+  }
+
+  // sync version to manifest files
+  {
+    const version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version;
+    for (const dst of globSync([
+      path.join(testDir, 'manifest.*.json'),
+    ], {windowsPathsNoEscape: true})) {
+      const data = JSON.parse(fs.readFileSync(dst, 'utf8'));
+      if (data.version !== version) {
+        console.log(`Updating version for "${dst}" ...`);
+        data.version = version;
+        fs.writeFileSync(dst, JSON.stringify(data, null, 2) + '\n');
+      }
+    }
+  }
+
+  // mirror source files under the shared directory
+  const testSharedDir = path.join(testDir, 'shared');
+
+  for (const dst of globSync([
+    path.join(testSharedDir, '**'),
+  ], {windowsPathsNoEscape: true})) {
+    const subpath = path.relative(testSharedDir, dst);
+    const src = path.join(srcDir, subpath);
+    if (!fs.existsSync(src)) {
+      fs.rmSync(dst, {force: true, recursive: true});
     }
   }
 
@@ -70,7 +137,7 @@ function buildTest(target) {
     path.join(srcDir, 'lib', '**', '*.js'),
   ], {windowsPathsNoEscape: true})) {
     const subpath = path.relative(srcDir, src);
-    const dst = path.join(testDir, 'shared', subpath);
+    const dst = path.join(testSharedDir, subpath);
     hardlink(src, dst);
   }
 }
@@ -83,7 +150,7 @@ function dev(target) {
 function pack(target) {
   build(target);
 
-  const filename = `webscrapbook.${target === 'firefox' ? 'xpi' : 'zip'}`;
+  const filename = `webscrapbook.${target.startsWith('firefox') ? 'xpi' : 'zip'}`;
   webExt.cmd.build({
     target,
     sourceDir: srcDir,
@@ -91,8 +158,8 @@ function pack(target) {
     filename,
     overwriteDest: true,
     ignoreFiles: [
-      'manifest.chromium.json',
-      'manifest.firefox.json',
+      '**/*.map',
+      'manifest.*.json',
     ],
   });
 }
@@ -123,7 +190,7 @@ Usage: node build.js [options ...]
 
 Options:
   -h, --help           Display usage help.
-  -t, --target=TARGET  Target browser. {chromium,firefox}
+  -t, --target=TARGET  Target browser. {chromium,firefox}[-{mv3,mv2}]
   -m, --mode=MODE      Mode of action. {dev,build,pack}
 `;
     process.stdout.write(usage);

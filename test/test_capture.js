@@ -29,7 +29,7 @@
 
 const {
   MochaQuery: $, assert,
-  userAgent, delay,
+  userAgent,
   xhr, readFileAsText, readFileAsArrayBuffer, readFileAsDataURL, readFileAsDocument,
   getRulesFromCssText, getToken, escapeRegExp, regex, rawRegex, cssRegex,
 } = unittest;
@@ -1846,6 +1846,10 @@ p { background-image: url("about:blank"); }`);
       assert.notExists(doc.querySelector('#next'));
       assert.notExists(doc.querySelector('img[src="blue.bmp"]'));
       assert.notExists(zip.file("blue.bmp"));
+
+      // should contain doctype and full head
+      assert.exists(doc.doctype);
+      assert.exists(doc.querySelector('head style'));
     });
 
     it('select an element', async function () {
@@ -1880,6 +1884,10 @@ p { background-image: url("about:blank"); }`);
       assert.notExists(doc.querySelector('#next'));
       assert.notExists(doc.querySelector('img[src="blue.bmp"]'));
       assert.notExists(zip.file("blue.bmp"));
+
+      // should contain doctype and full head
+      assert.exists(doc.doctype);
+      assert.exists(doc.querySelector('head style'));
     });
 
     it('select in a text node', async function () {
@@ -1914,6 +1922,10 @@ p { background-image: url("about:blank"); }`);
       assert.notExists(doc.querySelector('#next'));
       assert.notExists(doc.querySelector('img[src="blue.bmp"]'));
       assert.notExists(zip.file("blue.bmp"));
+
+      // should contain doctype and full head
+      assert.exists(doc.doctype);
+      assert.exists(doc.querySelector('head style'));
     });
 
     it('select in a comment node', async function () {
@@ -1949,6 +1961,10 @@ p { background-image: url("about:blank"); }`);
       assert.notExists(doc.querySelector('#next'));
       assert.notExists(doc.querySelector('img[src="blue.bmp"]'));
       assert.notExists(zip.file("blue.bmp"));
+
+      // should contain doctype and full head
+      assert.exists(doc.doctype);
+      assert.exists(doc.querySelector('head style'));
     });
 
     it('select in a CDATA node (for XHTML)', async function () {
@@ -1984,6 +2000,10 @@ p { background-image: url("about:blank"); }`);
       assert.notExists(doc.querySelector('#next'));
       assert.notExists(doc.querySelector('img[src="blue.bmp"]'));
       assert.notExists(zip.file("blue.bmp"));
+
+      // should contain doctype and full head
+      assert.exists(doc.doctype);
+      assert.exists(doc.querySelector('head style'));
     });
 
     $it.skipIf($.noMultipleSelection)('multiple ranges', async function () {
@@ -2861,6 +2881,9 @@ p { background-image: url("about:blank"); }`);
         assert.strictEqual(bases[0].getAttribute('href'), `http://example.com/`);
         assert.strictEqual(bases[0].getAttribute('target'), `_blank`);
         assert.strictEqual(bases[1].getAttribute('href'), `${localhost}/capture_base/subdir/dummy.html`);
+        assert.strictEqual(bases[2].getAttribute('href'), `${localhost}/capture_base/base.html?id=123`);
+        assert.strictEqual(bases[3].getAttribute('href'), `${localhost}/capture_base/base.html#foo`);
+        assert.strictEqual(bases[4].getAttribute('href'), `${localhost}/capture_base/base.html`);
       });
 
       it('should remove href attribute if capture.base = blank', async function () {
@@ -2881,6 +2904,9 @@ p { background-image: url("about:blank"); }`);
         assert(!bases[0].hasAttribute('href'));
         assert.strictEqual(bases[0].getAttribute('target'), `_blank`);
         assert(!bases[1].hasAttribute('href'));
+        assert(!bases[2].hasAttribute('href'));
+        assert(!bases[3].hasAttribute('href'));
+        assert(!bases[4].hasAttribute('href'));
       });
 
       it('should remove base element if capture.base = remove', async function () {
@@ -2982,6 +3008,10 @@ p { background-image: url("about:blank"); }`);
           assert.strictEqual(doc.querySelector('table').getAttribute('background'), `table_background.py`);
 
           assert.strictEqual(doc.querySelector('a').getAttribute('href'), `${localhost}/capture_base_dynamic/resources/anchor.py`);
+          assert.strictEqual(doc.querySelector('form').getAttribute('action'), `${localhost}/capture_base_dynamic/resources/form.py`);
+          assert.strictEqual(doc.querySelector('form input[type="image"]').getAttribute('formaction'), `${localhost}/capture_base_dynamic/resources/input-image.py`);
+          assert.strictEqual(doc.querySelector('form input[type="submit"]').getAttribute('formaction'), `${localhost}/capture_base_dynamic/resources/input-submit.py`);
+          assert.strictEqual(doc.querySelector('form button').getAttribute('formaction'), `${localhost}/capture_base_dynamic/resources/button.py`);
           assert.strictEqual(doc.querySelector('q').getAttribute('cite'), `${localhost}/capture_base_dynamic/resources/q.py`);
 
           var file = zip.file('img_src.py');
@@ -3183,6 +3213,10 @@ p { background-image: url("about:blank"); }`);
           assert.strictEqual(doc.querySelector('table').getAttribute('background'), `table_background.py`);
 
           assert.strictEqual(doc.querySelector('a').getAttribute('href'), `${localhost}/capture_base_dynamic/resources/resources/anchor.py`);
+          assert.strictEqual(doc.querySelector('form').getAttribute('action'), `${localhost}/capture_base_dynamic/resources/resources/form.py`);
+          assert.strictEqual(doc.querySelector('form input[type="image"]').getAttribute('formaction'), `${localhost}/capture_base_dynamic/resources/resources/input-image.py`);
+          assert.strictEqual(doc.querySelector('form input[type="submit"]').getAttribute('formaction'), `${localhost}/capture_base_dynamic/resources/resources/input-submit.py`);
+          assert.strictEqual(doc.querySelector('form button').getAttribute('formaction'), `${localhost}/capture_base_dynamic/resources/resources/button.py`);
           assert.strictEqual(doc.querySelector('q').getAttribute('cite'), `${localhost}/capture_base_dynamic/resources/resources/q.py`);
 
           var file = zip.file('img_src.py');
@@ -3915,7 +3949,7 @@ p { background-image: url("about:blank"); }`);
           var blob = await capture({
             url: `${localhost}/capture_css_disabled/picked.html`,
             options: baseOptions,
-          }, {delay: 100});
+          }, {delay: 800});
           var zip = await new JSZip().loadAsync(blob);
           var indexFile = zip.file('index.html');
           var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
@@ -3950,7 +3984,7 @@ p { background-image: url("about:blank"); }`);
           var blob = await capture({
             url: `${localhost}/capture_css_disabled/picked.html`,
             options: baseOptions,
-          }, {delay: 100});
+          }, {delay: 800});
           var zip = await new JSZip().loadAsync(blob);
           var indexFile = zip.file('index.html');
           var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
@@ -3982,7 +4016,7 @@ p { background-image: url("about:blank"); }`);
           var blob = await capture({
             url: `${localhost}/capture_css_disabled/scripted1.html`,
             options: baseOptions,
-          }, {delay: 100});
+          }, {delay: 300});
           var zip = await new JSZip().loadAsync(blob);
           var indexFile = zip.file('index.html');
           var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
@@ -4007,7 +4041,7 @@ p { background-image: url("about:blank"); }`);
           var blob = await capture({
             url: `${localhost}/capture_css_disabled/scripted2.html`,
             options: baseOptions,
-          }, {delay: 100});
+          }, {delay: 300});
           var zip = await new JSZip().loadAsync(blob);
           var indexFile = zip.file('index.html');
           var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
@@ -4027,7 +4061,7 @@ p { background-image: url("about:blank"); }`);
           var blob = await capture({
             url: `${localhost}/capture_css_disabled/scripted1.html`,
             options: baseOptions,
-          }, {delay: 100});
+          }, {delay: 300});
           var zip = await new JSZip().loadAsync(blob);
           var indexFile = zip.file('index.html');
           var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
@@ -4052,7 +4086,7 @@ p { background-image: url("about:blank"); }`);
           var blob = await capture({
             url: `${localhost}/capture_css_disabled/scripted2.html`,
             options: baseOptions,
-          }, {delay: 100});
+          }, {delay: 300});
           var zip = await new JSZip().loadAsync(blob);
           var indexFile = zip.file('index.html');
           var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
@@ -4917,7 +4951,7 @@ div > ::slotted(*) { font-size: 1.2em; }`);
 div > ::slotted(*) { font-size: 1.2em; }`);
         });
 
-        $it.skipIf($.noPartPseudo)('pseudo ::part', async function () {
+        it('pseudo ::part', async function () {
           var options = Object.assign({}, baseOptions, {
             "capture.rewriteCss": "match",
           });
@@ -4949,9 +4983,6 @@ div > ::slotted(*) { font-size: 1.2em; }`);
           });
 
           var zip = await new JSZip().loadAsync(blob);
-          var indexFile = zip.file('index.html');
-          var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
-          var doc = await readFileAsDocument(indexBlob);
 
           var cssFile = zip.file('linked.css');
           var cssText = (await readFileAsText(await cssFile.async('blob'))).trim();
@@ -4978,9 +5009,6 @@ div > ::slotted(*) { font-size: 1.2em; }`);
           });
 
           var zip = await new JSZip().loadAsync(blob);
-          var indexFile = zip.file('index.html');
-          var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
-          var doc = await readFileAsDocument(indexBlob);
 
           var cssFile = zip.file('linked.css');
           var cssText = (await readFileAsText(await cssFile.async('blob'))).trim();
@@ -5007,9 +5035,6 @@ div > ::slotted(*) { font-size: 1.2em; }`);
           });
 
           var zip = await new JSZip().loadAsync(blob);
-          var indexFile = zip.file('index.html');
-          var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
-          var doc = await readFileAsDocument(indexBlob);
 
           var cssFile = zip.file('linked.css');
           var cssText = (await readFileAsText(await cssFile.async('blob'))).trim();
@@ -5034,9 +5059,6 @@ div > ::slotted(*) { font-size: 1.2em; }`);
           });
 
           var zip = await new JSZip().loadAsync(blob);
-          var indexFile = zip.file('index.html');
-          var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
-          var doc = await readFileAsDocument(indexBlob);
 
           var cssFile = zip.file('linked.css');
           var cssText = (await readFileAsText(await cssFile.async('blob'))).trim();
@@ -7602,7 +7624,7 @@ body { color: red; }`);
 }`);
         });
 
-        $it.skipIf($.noPartPseudo)('::part', async function () {
+        it('::part', async function () {
           var options = Object.assign({}, baseOptions, {
             "capture.imageBackground": "save-used",
             "capture.rewriteCss": "url",
@@ -8227,7 +8249,7 @@ body { color: red; }`);
 @font-face { font-family: local-by-none; src: url(""); }`);
         });
 
-        $it.skipIf($.noPartPseudo)('::part', async function () {
+        it('::part', async function () {
           var options = Object.assign({}, baseOptions, {
             "capture.rewriteCss": "url",
             "capture.font": "save-used",
@@ -8432,6 +8454,7 @@ body { color: red; }`);
         var indexFile = zip.file('index.html');
         var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
         var doc = await readFileAsDocument(indexBlob);
+
         var scripts = doc.querySelectorAll('script');
         assert.strictEqual(scripts[0].textContent.trim(), `console.log('head');`);
         assert.strictEqual(scripts[1].getAttribute('src'), `script1.js`);
@@ -8440,8 +8463,19 @@ body { color: red; }`);
         assert.strictEqual(scripts[3].textContent.trim(), `console.log('body');`);
         assert.strictEqual(scripts[4].textContent.trim(), `console.log('post-body');`);
         assert.strictEqual(scripts[5].textContent.trim(), `console.log('post-html');`);
-        var elem = doc.querySelector('a');
-        assert.strictEqual(elem.getAttribute('href').trim(), `javascript:console.log('a');`);
+
+        var anchors = doc.querySelectorAll('a');
+        assert.strictEqual(anchors[0].getAttribute('href'), `javascript:console.log('a');`);
+        assert.strictEqual(anchors[1].getAttribute('href'), `Javascript:console.log('a');`);
+        assert.strictEqual(anchors[2].getAttribute('href'), ` javascript:console.log('a');`);
+        assert.strictEqual(anchors[3].getAttribute('href'), `\tjavascript:console.log('a');`);
+        assert.strictEqual(anchors[4].getAttribute('href'), `\nj\na\nv\na\ns\nc\nr\ni\np\nt\n:console.log('a');`);
+
+        assert.strictEqual(doc.querySelector('form').getAttribute('action'), `javascript:console.log('form');`);
+        assert.strictEqual(doc.querySelector('input[type="image"]').getAttribute('formaction'), `javascript:console.log('input[type=image]');`);
+        assert.strictEqual(doc.querySelector('input[type="submit"]').getAttribute('formaction'), `javascript:console.log('input[type=submit]');`);
+        assert.strictEqual(doc.querySelector('button').getAttribute('formaction'), `javascript:console.log('button');`);
+
         var elem = doc.body;
         assert.strictEqual(elem.getAttribute('onload').trim(), `console.log('load');`);
         assert.strictEqual(elem.getAttribute('oncontextmenu').trim(), `return false;`);
@@ -8470,6 +8504,7 @@ body { color: red; }`);
         var indexFile = zip.file('index.html');
         var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
         var doc = await readFileAsDocument(indexBlob);
+
         var scripts = doc.querySelectorAll('script');
         assert.strictEqual(scripts[0].textContent.trim(), `console.log('head');`);
         assert.strictEqual(scripts[1].getAttribute('src'), `${localhost}/capture_script/script1.js`);
@@ -8478,8 +8513,19 @@ body { color: red; }`);
         assert.strictEqual(scripts[3].textContent.trim(), `console.log('body');`);
         assert.strictEqual(scripts[4].textContent.trim(), `console.log('post-body');`);
         assert.strictEqual(scripts[5].textContent.trim(), `console.log('post-html');`);
-        var elem = doc.querySelector('a');
-        assert.strictEqual(elem.getAttribute('href').trim(), `javascript:console.log('a');`);
+
+        var anchors = doc.querySelectorAll('a');
+        assert.strictEqual(anchors[0].getAttribute('href'), `javascript:console.log('a');`);
+        assert.strictEqual(anchors[1].getAttribute('href'), `Javascript:console.log('a');`);
+        assert.strictEqual(anchors[2].getAttribute('href'), ` javascript:console.log('a');`);
+        assert.strictEqual(anchors[3].getAttribute('href'), `\tjavascript:console.log('a');`);
+        assert.strictEqual(anchors[4].getAttribute('href'), `\nj\na\nv\na\ns\nc\nr\ni\np\nt\n:console.log('a');`);
+
+        assert.strictEqual(doc.querySelector('form').getAttribute('action'), `javascript:console.log('form');`);
+        assert.strictEqual(doc.querySelector('input[type="image"]').getAttribute('formaction'), `javascript:console.log('input[type=image]');`);
+        assert.strictEqual(doc.querySelector('input[type="submit"]').getAttribute('formaction'), `javascript:console.log('input[type=submit]');`);
+        assert.strictEqual(doc.querySelector('button').getAttribute('formaction'), `javascript:console.log('button');`);
+
         var elem = doc.body;
         assert.strictEqual(elem.getAttribute('onload').trim(), `console.log('load');`);
         assert.strictEqual(elem.getAttribute('oncontextmenu').trim(), `return false;`);
@@ -8508,6 +8554,7 @@ body { color: red; }`);
         var indexFile = zip.file('index.html');
         var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
         var doc = await readFileAsDocument(indexBlob);
+
         var scripts = doc.querySelectorAll('script');
         assert.strictEqual(scripts[0].textContent.trim(), ``);
         assert(!scripts[1].hasAttribute('src'));
@@ -8516,8 +8563,19 @@ body { color: red; }`);
         assert.strictEqual(scripts[3].textContent.trim(), ``);
         assert.strictEqual(scripts[4].textContent.trim(), ``);
         assert.strictEqual(scripts[5].textContent.trim(), ``);
-        var elem = doc.querySelector('a');
-        assert.strictEqual(elem.getAttribute('href').trim(), `javascript:`);
+
+        var anchors = doc.querySelectorAll('a');
+        assert.strictEqual(anchors[0].getAttribute('href'), `javascript:`);
+        assert.strictEqual(anchors[1].getAttribute('href'), `javascript:`);
+        assert.strictEqual(anchors[2].getAttribute('href'), `javascript:`);
+        assert.strictEqual(anchors[3].getAttribute('href'), `javascript:`);
+        assert.strictEqual(anchors[4].getAttribute('href'), `javascript:`);
+
+        assert.strictEqual(doc.querySelector('form').getAttribute('action'), `javascript:`);
+        assert.strictEqual(doc.querySelector('input[type="image"]').getAttribute('formaction'), `javascript:`);
+        assert.strictEqual(doc.querySelector('input[type="submit"]').getAttribute('formaction'), `javascript:`);
+        assert.strictEqual(doc.querySelector('button').getAttribute('formaction'), `javascript:`);
+
         var elem = doc.body;
         assert(!elem.hasAttribute('onload'));
         assert(!elem.hasAttribute('oncontextmenu'));
@@ -8546,10 +8604,22 @@ body { color: red; }`);
         var indexFile = zip.file('index.html');
         var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
         var doc = await readFileAsDocument(indexBlob);
+
         var scripts = doc.querySelectorAll('script');
         assert.strictEqual(scripts.length, 0);
-        var elem = doc.querySelector('a');
-        assert.strictEqual(elem.getAttribute('href').trim(), `javascript:`);
+
+        var anchors = doc.querySelectorAll('a');
+        assert.strictEqual(anchors[0].getAttribute('href'), `javascript:`);
+        assert.strictEqual(anchors[1].getAttribute('href'), `javascript:`);
+        assert.strictEqual(anchors[2].getAttribute('href'), `javascript:`);
+        assert.strictEqual(anchors[3].getAttribute('href'), `javascript:`);
+        assert.strictEqual(anchors[4].getAttribute('href'), `javascript:`);
+
+        assert.strictEqual(doc.querySelector('form').getAttribute('action'), `javascript:`);
+        assert.strictEqual(doc.querySelector('input[type="image"]').getAttribute('formaction'), `javascript:`);
+        assert.strictEqual(doc.querySelector('input[type="submit"]').getAttribute('formaction'), `javascript:`);
+        assert.strictEqual(doc.querySelector('button').getAttribute('formaction'), `javascript:`);
+
         var elem = doc.body;
         assert(!elem.hasAttribute('onload'));
         assert(!elem.hasAttribute('oncontextmenu'));
@@ -8828,7 +8898,7 @@ body { color: red; }`);
       $it.xfailIf(
         userAgent.is('firefox') && userAgent.major < 128,
         'content script cannot be injected into a sandboxed iframe in Firefox < 128',
-      )('basic', async function () {
+      )('allow-scripts', async function () {
         var options = Object.assign({}, baseOptions, {
           "capture.frame": "save",
           "capture.saveResourcesSequentially": true,
@@ -8854,7 +8924,7 @@ body { color: red; }`);
 
       $it.skipIf(
         !(userAgent.is('firefox') && userAgent.major < 128),
-      )('basic (Firefox <= 128)', async function () {
+      )('allow-scripts (Firefox <= 128)', async function () {
         var options = Object.assign({}, baseOptions, {
           "capture.frame": "save",
           "capture.saveResourcesSequentially": true,
@@ -8870,6 +8940,30 @@ body { color: red; }`);
         var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
         var doc = await readFileAsDocument(indexBlob);
         assert.strictEqual(doc.querySelector('p').textContent.trim(), `frame1 content`);
+        assert.strictEqual(doc.querySelector('img').getAttribute('src'), 'red.bmp');
+
+        var imgFile = zip.file('red.bmp');
+        assert.exists(imgFile);
+        var imgData = await imgFile.async('base64');
+        assert.strictEqual(imgData, 'Qk08AAAAAAAAADYAAAAoAAAAAQAAAAEAAAABACAAAAAAAAYAAAASCwAAEgsAAAAAAAAAAAAAAAD/AAAA');
+      });
+
+      it('allow-same-origin', async function () {
+        var options = Object.assign({}, baseOptions, {
+          "capture.frame": "save",
+          "capture.saveResourcesSequentially": true,
+        });
+        var blob = await capture({
+          url: `${localhost}/capture_frame/sandboxed2.html`,
+          options,
+        }, {delay: 500});
+        var zip = await new JSZip().loadAsync(blob);
+
+        // frame1.html
+        var indexFile = zip.file('index_1.html');
+        var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
+        var doc = await readFileAsDocument(indexBlob);
+        assert.strictEqual(doc.querySelector('p').textContent.trim(), `frame1 content modified`);
         assert.strictEqual(doc.querySelector('img').getAttribute('src'), 'red.bmp');
 
         var imgFile = zip.file('red.bmp');
@@ -9040,7 +9134,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
     });
 
     describe('about: frame', function () {
-      it('save the current content for about: frames', async function () {
+      it('should save the current content for about: frames', async function () {
         var options = Object.assign({}, baseOptions, {
           "capture.frame": "save",
           "capture.saveResourcesSequentially": true,
@@ -9049,7 +9143,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         var blob = await capture({
           url: `${localhost}/capture_frame/about.html`,
           options,
-        }, {delay: 300});
+        }, {delay: 500});
 
         var zip = await new JSZip().loadAsync(blob);
 
@@ -9074,6 +9168,180 @@ document.querySelector("p").textContent = "srcdoc content modified";
         var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
         var doc = await readFileAsDocument(indexBlob);
         assert.strictEqual(doc.body.textContent.trim(), 'iframe modified 2');
+      });
+    });
+
+    describe('javascript: frame', function () {
+      var options = Object.assign({}, baseOptions, {
+        "capture.saveResourcesSequentially": true,
+      });
+
+      describe('should tidy source URL according to `capture.script` when the raw URL is to be saved', function () {
+        for (const captureFrame of ["save"]) {
+          for (const captureScript of ["save", "link"]) {
+            it(`capture.frame = ${captureFrame}, capture.script = ${captureScript}`, async function () {
+              options["capture.frame"] = captureFrame;
+              options["capture.script"] = captureScript;
+
+              var blob = await capture({
+                url: `${localhost}/capture_frame/javascript.html`,
+                options,
+              });
+
+              var zip = await new JSZip().loadAsync(blob);
+
+              var indexFile = zip.file('index.html');
+              var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
+              var doc = await readFileAsDocument(indexBlob);
+
+              var frames = doc.querySelectorAll('iframe');
+              assert.strictEqual(frames[0].getAttribute('src'), "index_1.html");
+              assert.strictEqual(frames[1].getAttribute('src'), `javascript:console.log('iframe');`);
+            });
+          }
+          for (const captureScript of ["blank", "remove"]) {
+            it(`capture.frame = ${captureFrame}, capture.script = ${captureScript}`, async function () {
+              options["capture.frame"] = captureFrame;
+              options["capture.script"] = captureScript;
+
+              var blob = await capture({
+                url: `${localhost}/capture_frame/javascript.html`,
+                options,
+              });
+
+              var zip = await new JSZip().loadAsync(blob);
+
+              var indexFile = zip.file('index.html');
+              var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
+              var doc = await readFileAsDocument(indexBlob);
+
+              var frames = doc.querySelectorAll('iframe');
+              assert.strictEqual(frames[0].getAttribute('src'), "index_1.html");
+              assert.strictEqual(frames[1].getAttribute('src'), `javascript:`);
+            });
+          }
+        }
+
+        for (const captureFrame of ["link"]) {
+          for (const captureScript of ["save", "link"]) {
+            it(`capture.frame = ${captureFrame}, capture.script = ${captureScript}`, async function () {
+              options["capture.frame"] = captureFrame;
+              options["capture.script"] = captureScript;
+
+              var blob = await capture({
+                url: `${localhost}/capture_frame/javascript.html`,
+                options,
+              });
+
+              var zip = await new JSZip().loadAsync(blob);
+
+              var indexFile = zip.file('index.html');
+              var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
+              var doc = await readFileAsDocument(indexBlob);
+
+              var frames = doc.querySelectorAll('iframe');
+              assert.strictEqual(frames[0].getAttribute('src'), `javascript:console.log('iframe');`);
+              assert.strictEqual(frames[1].getAttribute('src'), `javascript:console.log('iframe');`);
+
+              // frame
+              var blob = await capture({
+                url: `${localhost}/capture_frame/javascript_frame.html`,
+                options,
+              });
+
+              var zip = await new JSZip().loadAsync(blob);
+
+              var indexFile = zip.file('index.html');
+              var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
+              var doc = await readFileAsDocument(indexBlob);
+
+              var frames = doc.querySelectorAll('frame');
+              assert.strictEqual(frames[0].getAttribute('src'), `javascript:console.log('frame');`);
+            });
+          }
+          for (const captureScript of ["blank", "remove"]) {
+            it(`capture.frame = ${captureFrame}, capture.script = ${captureScript}`, async function () {
+              options["capture.frame"] = captureFrame;
+              options["capture.script"] = captureScript;
+
+              var blob = await capture({
+                url: `${localhost}/capture_frame/javascript.html`,
+                options,
+              });
+
+              var zip = await new JSZip().loadAsync(blob);
+
+              var indexFile = zip.file('index.html');
+              var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
+              var doc = await readFileAsDocument(indexBlob);
+
+              var frames = doc.querySelectorAll('iframe');
+              assert.strictEqual(frames[0].getAttribute('src'), `javascript:`);
+              assert.strictEqual(frames[1].getAttribute('src'), `javascript:`);
+
+              // frame
+              var blob = await capture({
+                url: `${localhost}/capture_frame/javascript_frame.html`,
+                options,
+              });
+
+              var zip = await new JSZip().loadAsync(blob);
+
+              var indexFile = zip.file('index.html');
+              var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
+              var doc = await readFileAsDocument(indexBlob);
+
+              var frames = doc.querySelectorAll('frame');
+              assert.strictEqual(frames[0].getAttribute('src'), `javascript:`);
+            });
+          }
+        }
+
+        for (const captureFrame of ["blank"]) {
+          for (const captureScript of ["save", "link", "blank", "remove"]) {
+            it(`capture.frame = ${captureFrame}, capture.script = ${captureScript}`, async function () {
+              options["capture.frame"] = captureFrame;
+              options["capture.script"] = captureScript;
+
+              var blob = await capture({
+                url: `${localhost}/capture_frame/javascript.html`,
+                options,
+              });
+
+              var zip = await new JSZip().loadAsync(blob);
+
+              var indexFile = zip.file('index.html');
+              var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
+              var doc = await readFileAsDocument(indexBlob);
+
+              var frames = doc.querySelectorAll('iframe');
+              assert(!frames[0].hasAttribute('src'));
+              assert(!frames[1].hasAttribute('src'));
+            });
+          }
+        }
+
+        for (const captureFrame of ["remove"]) {
+          for (const captureScript of ["save", "link", "blank", "remove"]) {
+            it(`capture.frame = ${captureFrame}, capture.script = ${captureScript}`, async function () {
+              options["capture.frame"] = captureFrame;
+              options["capture.script"] = captureScript;
+
+              var blob = await capture({
+                url: `${localhost}/capture_frame/javascript.html`,
+                options,
+              });
+
+              var zip = await new JSZip().loadAsync(blob);
+
+              var indexFile = zip.file('index.html');
+              var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
+              var doc = await readFileAsDocument(indexBlob);
+
+              assert(!doc.querySelector('iframe'));
+            });
+          }
+        }
       });
     });
 
@@ -10695,7 +10963,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         var doc = await readFileAsDocument(indexBlob);
 
         var loader = doc.querySelector('script[data-scrapbook-elem="basic-loader"]');
-        assert(loader.textContent.trim().match(rawRegex`${'^'}(function () {${'.+'}})()${'$'}`));
+        assert(loader.textContent.trim().match(rawRegex`${'^'}(function${'\\s*'}()${'\\s*'}{${'.+'}})()${'$'}`));
 
         assert(!doc.querySelector('#c1').hasAttribute("data-scrapbook-canvas"));
         assert(doc.querySelector('#c2').getAttribute("data-scrapbook-canvas").match(rawRegex`${'^'}data:image/png;base64,`));
@@ -10714,7 +10982,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         var doc = await readFileAsDocument(indexBlob);
 
         var loader = doc.querySelector('script[data-scrapbook-elem="basic-loader"]');
-        assert(loader.textContent.trim().match(rawRegex`${'^'}(function () {${'.+'}})()${'$'}`));
+        assert(loader.textContent.trim().match(rawRegex`${'^'}(function${'\\s*'}()${'\\s*'}{${'.+'}})()${'$'}`));
 
         var host = doc.querySelector('span');
         var frag = doc.createElement("template");
@@ -10754,7 +11022,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         var doc = await readFileAsDocument(indexBlob);
 
         var loader = doc.querySelector('script[data-scrapbook-elem="basic-loader"]');
-        assert(loader.textContent.trim().match(rawRegex`${'^'}(function () {${'.+'}})()${'$'}`));
+        assert(loader.textContent.trim().match(rawRegex`${'^'}(function${'\\s*'}()${'\\s*'}{${'.+'}})()${'$'}`));
 
         var host = doc.querySelector('span');
         var frag = doc.createElement("template");
@@ -10793,7 +11061,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         var doc = await readFileAsDocument(indexBlob);
 
         var loader = doc.querySelector('script[data-scrapbook-elem="basic-loader"]');
-        assert(loader.textContent.trim().match(rawRegex`${'^'}(function () {${'.+'}})()${'$'}`));
+        assert(loader.textContent.trim().match(rawRegex`${'^'}(function${'\\s*'}()${'\\s*'}{${'.+'}})()${'$'}`));
 
         var host = doc.querySelector('span');
         var frag = doc.createElement("template");
@@ -10821,7 +11089,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         var doc = await readFileAsDocument(indexBlob);
 
         var loader = doc.querySelector('script[data-scrapbook-elem="basic-loader"]');
-        assert(loader.textContent.trim().match(rawRegex`${'^'}(function () {${'.+'}})()${'$'}`));
+        assert(loader.textContent.trim().match(rawRegex`${'^'}(function${'\\s*'}()${'\\s*'}{${'.+'}})()${'$'}`));
 
         assert(doc.querySelector('canvas').getAttribute("data-scrapbook-canvas").match(rawRegex`${'^'}data:image/png;base64,`));
       });
@@ -12908,9 +13176,6 @@ document.querySelector("p").textContent = "srcdoc content modified";
           options,
         });
         var zip = await new JSZip().loadAsync(blob);
-        var indexFile = zip.file('index.html');
-        var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
-        var doc = await readFileAsDocument(indexBlob);
 
         var file = zip.file('css1.py');
         var text = (await readFileAsText(await file.async('blob'))).trim();
@@ -13011,7 +13276,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         assert.strictEqual(shadow2.querySelector('img').getAttribute('src'), `blue.bmp`);
 
         var loader = doc.querySelector('script[data-scrapbook-elem="basic-loader"]');
-        assert(loader.textContent.trim().match(rawRegex`${'^'}(function () {${'.+'}})()${'$'}`));
+        assert(loader.textContent.trim().match(rawRegex`${'^'}(function${'\\s*'}()${'\\s*'}{${'.+'}})()${'$'}`));
 
         // check records
         assertNoRecord(host1);
@@ -13089,7 +13354,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         assert.strictEqual(shadow2.querySelector('img').getAttribute('src'), `blue.bmp`);
 
         var loader = doc.querySelector('script[data-scrapbook-elem="basic-loader"]');
-        assert(loader.textContent.trim().match(rawRegex`${'^'}(function () {${'.+'}})()${'$'}`));
+        assert(loader.textContent.trim().match(rawRegex`${'^'}(function${'\\s*'}()${'\\s*'}{${'.+'}})()${'$'}`));
 
         // check records
         assertNoRecord(host1);
@@ -13134,7 +13399,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         assert.strictEqual(shadow2.querySelector('img').getAttribute('src'), `blue.bmp`);
 
         var loader = doc.querySelector('script[data-scrapbook-elem="basic-loader"]');
-        assert(loader.textContent.trim().match(rawRegex`${'^'}(function () {${'.+'}})()${'$'}`));
+        assert(loader.textContent.trim().match(rawRegex`${'^'}(function${'\\s*'}()${'\\s*'}{${'.+'}})()${'$'}`));
 
         // check records
         assertNoRecord(host1);
@@ -13198,7 +13463,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         assert.strictEqual(host1.getAttribute("data-scrapbook-shadowdom-slot-assignment"), "manual");
 
         var loader = doc.querySelector('script[data-scrapbook-elem="basic-loader"]');
-        assert(loader.textContent.trim().match(rawRegex`${'^'}(function () {${'.+'}})()${'$'}`));
+        assert(loader.textContent.trim().match(rawRegex`${'^'}(function${'\\s*'}()${'\\s*'}{${'.+'}})()${'$'}`));
 
         // check records
         assertNoRecord(host1);
@@ -13261,7 +13526,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         assert.strictEqual(slots[0].getAttribute('data-scrapbook-slot-assigned'), "4,5");
 
         var loader = doc.querySelector('script[data-scrapbook-elem="basic-loader"]');
-        assert(loader.textContent.trim().match(rawRegex`${'^'}(function () {${'.+'}})()${'$'}`));
+        assert(loader.textContent.trim().match(rawRegex`${'^'}(function${'\\s*'}()${'\\s*'}{${'.+'}})()${'$'}`));
 
         assertNoRecord(host);
         assertNoRecord(shadow);
@@ -13296,7 +13561,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         var shadow2 = frag.content;
 
         var loader = doc.querySelector('script[data-scrapbook-elem="basic-loader"]');
-        assert(loader.textContent.trim().match(rawRegex`${'^'}(function () {${'.+'}})()${'$'}`));
+        assert(loader.textContent.trim().match(rawRegex`${'^'}(function${'\\s*'}()${'\\s*'}{${'.+'}})()${'$'}`));
 
         assertNoRecord(host);
         assertNoRecord(host, {filter: {regexAttr: /^data-scrapbook-slot-/}});
@@ -13337,7 +13602,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         assert.strictEqual(shadow1.querySelector('img').getAttribute('src'), `green.bmp`);
 
         var loader = doc.querySelector('script[data-scrapbook-elem="basic-loader"]');
-        assert(loader.textContent.trim().match(rawRegex`${'^'}(function () {${'.+'}})()${'$'}`));
+        assert(loader.textContent.trim().match(rawRegex`${'^'}(function${'\\s*'}()${'\\s*'}{${'.+'}})()${'$'}`));
       });
     });
 
@@ -13374,7 +13639,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         assert.strictEqual(shadow1.querySelector('img').getAttribute('src'), `green.bmp`);
 
         var loader = doc.querySelector('script[data-scrapbook-elem="basic-loader"]');
-        assert(loader.textContent.trim().match(rawRegex`${'^'}(function () {${'.+'}})()${'$'}`));
+        assert(loader.textContent.trim().match(rawRegex`${'^'}(function${'\\s*'}()${'\\s*'}{${'.+'}})()${'$'}`));
       });
     });
 
@@ -13425,7 +13690,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
         var doc = await readFileAsDocument(indexBlob);
         var value = doc.querySelector(`script[data-scrapbook-elem="custom-elements-loader"]`).textContent.trim();
-        assert(value.match(rawRegex`${'^'}(function (names) {${'.+'}})(["custom-subelem","custom-elem"])${'$'}`));
+        assert(value.match(rawRegex`${'^'}(function${'\\s*'}(${'\\w+'})${'\\s*'}{${'.+'}})(["custom-subelem","custom-elem"])${'$'}`));
       });
 
       it('capture.script = remove', async function () {
@@ -13442,7 +13707,7 @@ document.querySelector("p").textContent = "srcdoc content modified";
         var indexBlob = new Blob([await indexFile.async('blob')], {type: "text/html"});
         var doc = await readFileAsDocument(indexBlob);
         var value = doc.querySelector(`script[data-scrapbook-elem="custom-elements-loader"]`).textContent.trim();
-        assert(value.match(rawRegex`${'^'}(function (names) {${'.+'}})(["custom-subelem","custom-elem"])${'$'}`));
+        assert(value.match(rawRegex`${'^'}(function${'\\s*'}(${'\\w+'})${'\\s*'}{${'.+'}})(["custom-subelem","custom-elem"])${'$'}`));
       });
     });
 
